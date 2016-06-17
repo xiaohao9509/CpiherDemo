@@ -62,9 +62,7 @@ public class Md5Fragment extends Fragment implements View.OnClickListener {
                 }
                 text.setText(builder.toString());
 
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
+            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
         }
