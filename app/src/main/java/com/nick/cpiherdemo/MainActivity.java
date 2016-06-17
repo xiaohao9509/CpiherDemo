@@ -1,6 +1,7 @@
 package com.nick.cpiherdemo;
 
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,6 +12,8 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawer;
+    private FragmentTransaction mTransaction;
+    private Fragment[] mFragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,31 +28,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigation.setNavigationItemSelectedListener(this);
 
+
+
+        mFragments = new Fragment[5];
+
+        mFragments[0] = new DesFragment();
+        mFragments[1] = new Base64Fragment();
+        mFragments[2] = new DesFragment();
+        mFragments[3] = new RsaFragment();
+        mFragments[4] = new SignFragment();
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        mTransaction = getSupportFragmentManager().beginTransaction();
 
         switch (item.getItemId()) {
             case R.id.menu_md5:
-                transaction.replace(R.id.container, new Md5Fragment());
+                mTransaction.replace(R.id.container, mFragments[0]);
                 break;
             case R.id.menu_base64:
-                transaction.replace(R.id.container, new Base64Fragment());
+                mTransaction.replace(R.id.container, mFragments[1]);
                 break;
             case R.id.menu_des:
-                transaction.replace(R.id.container, new DesFragment());
+                mTransaction.replace(R.id.container, mFragments[2]);
                 break;
             case R.id.menu_rsa:
-                transaction.replace(R.id.container, new RsaFragment());
+                mTransaction.replace(R.id.container, mFragments[3]);
                 break;
             case R.id.menu_sign:
-                transaction.replace(R.id.container,new SignFragment());
+                mTransaction.replace(R.id.container, mFragments[4]);
                 break;
         }
-        transaction.commit();
+        mTransaction.commit();
 
         mDrawer.closeDrawer(GravityCompat.START);
 
