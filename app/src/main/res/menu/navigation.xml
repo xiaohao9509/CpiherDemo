@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_md5"
+            android:checked="true"
+            android:title="MD5"/>
+        <item
+            android:id="@+id/menu_base64"
+            android:title="Base64"/>
+        <item
+            android:id="@+id/menu_des"
+            android:title="Des"/>
+        <item
+            android:id="@+id/menu_rsa"
+            android:title="Rsa"/>
+        <item
+            android:id="@+id/menu_sign"
+            android:title="Singn"/>
+    </group>
+</menu>
