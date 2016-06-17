@@ -12,7 +12,6 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawer;
-    private FragmentTransaction mTransaction;
     private Fragment[] mFragments;
 
     @Override
@@ -28,8 +27,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         navigation.setNavigationItemSelectedListener(this);
 
-
-
         mFragments = new Fragment[5];
 
         mFragments[0] = new DesFragment();
@@ -42,26 +39,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        mTransaction = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         switch (item.getItemId()) {
             case R.id.menu_md5:
-                mTransaction.replace(R.id.container, mFragments[0]);
+                transaction.replace(R.id.container, mFragments[0]);
                 break;
             case R.id.menu_base64:
-                mTransaction.replace(R.id.container, mFragments[1]);
+                transaction.replace(R.id.container, mFragments[1]);
                 break;
             case R.id.menu_des:
-                mTransaction.replace(R.id.container, mFragments[2]);
+                transaction.replace(R.id.container, mFragments[2]);
                 break;
             case R.id.menu_rsa:
-                mTransaction.replace(R.id.container, mFragments[3]);
+                transaction.replace(R.id.container, mFragments[3]);
                 break;
             case R.id.menu_sign:
-                mTransaction.replace(R.id.container, mFragments[4]);
+                transaction.replace(R.id.container, mFragments[4]);
                 break;
         }
-        mTransaction.commit();
+        transaction.commit();
 
         mDrawer.closeDrawer(GravityCompat.START);
 

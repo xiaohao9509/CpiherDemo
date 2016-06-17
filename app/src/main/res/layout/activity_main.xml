@@ -6,8 +6,7 @@
     android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.nick.cpiherdemo.MainActivity"
-    >
+    tools:context="com.nick.cpiherdemo.MainActivity">
 
     <FrameLayout
         android:id="@+id/container"
