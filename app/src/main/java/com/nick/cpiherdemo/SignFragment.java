@@ -30,8 +30,8 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class SignFragment extends Fragment implements View.OnClickListener {
 
-    public static final String publicKesStr = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCSSBDpRaB+7UaAterQW1JBEJG6drgAztaHv/ok5dQI/egx2dZQ4kiaM3kWQ9Gt0/bLS+1wb4LypUbLQJPUSb+Oz61CTShbQCjt6iEtQglUyzk40GWm/m0tQ946j5evxxNG+hx3GC43oiR3wcbkPwlE/SS7DF3KZxrJ0kQf1EIy4QIDAQAB";
-    public static final String privateKesStr = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAJJIEOlFoH7tRoC16tBbUkEQkbp2uADO1oe/+iTl1Aj96DHZ1lDiSJozeRZD0a3T9stL7XBvgvKlRstAk9RJv47PrUJNKFtAKO3qIS1CCVTLOTjQZab+bS1D3jqPl6/HE0b6HHcYLjeiJHfBxuQ/CUT9JLsMXcpnGsnSRB/UQjLhAgMBAAECgYAjCVHLnZqobApz756TUxwra12MLL07rE7j6s5uIgIcOTxxHDzh2KENFgENnSbOnLNC1CfFw1+44G9JZWlC8nsHy+9yyouCG9c0Xmk4lfp3q5UDKiHUVPzCJ4RF4oaAV0fltAxZQZ4By0YhsW64MYMBWX4SSza8UHPooaLCuwfwAQJBAMOr7/o8DJv2OiYdoqLNJZVKLtVGYQqGwyhjcFbKU6pk/EBw5JBP79TrcsEJ+igL8qlMHyWC9RtpSNpVXKDNmoECQQC/YdeAiLb2olljaCrJuAHF/rdGw0BL6t1O/gl4jBPiOd0ADu/unBerbpg630yweAgZC72fsuaH83Bn99MB9qhhAkEAiR3ig8MyvtPz+aPIxTbnAE/Es9WmyP6YoaPVJCySJpSvo+S4dlxd3yHC/30jXI7K1FIwfVPguP21fLJWv6R0gQJBAKqR32n1b2w9ogGRE6GZWCtJK7vrxWBkQT5n97Ty073q6Gdm6Lz3bbki5paB8m3NbRo1dpng7sn4VBS1seCsH8ECQAJe49UUHUGtFdFuxpyAn3V8+TogOg5CM10/rJTj4aeOnXpysbyaX/PIrtZSHgho7BvAPfpbWZhYqZKSJPmn6UI=";
+    public static final String PUBLIC_KES_STR = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCSSBDpRaB+7UaAterQW1JBEJG6drgAztaHv/ok5dQI/egx2dZQ4kiaM3kWQ9Gt0/bLS+1wb4LypUbLQJPUSb+Oz61CTShbQCjt6iEtQglUyzk40GWm/m0tQ946j5evxxNG+hx3GC43oiR3wcbkPwlE/SS7DF3KZxrJ0kQf1EIy4QIDAQAB";
+    public static final String PRIVATE_KES_STR = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAJJIEOlFoH7tRoC16tBbUkEQkbp2uADO1oe/+iTl1Aj96DHZ1lDiSJozeRZD0a3T9stL7XBvgvKlRstAk9RJv47PrUJNKFtAKO3qIS1CCVTLOTjQZab+bS1D3jqPl6/HE0b6HHcYLjeiJHfBxuQ/CUT9JLsMXcpnGsnSRB/UQjLhAgMBAAECgYAjCVHLnZqobApz756TUxwra12MLL07rE7j6s5uIgIcOTxxHDzh2KENFgENnSbOnLNC1CfFw1+44G9JZWlC8nsHy+9yyouCG9c0Xmk4lfp3q5UDKiHUVPzCJ4RF4oaAV0fltAxZQZ4By0YhsW64MYMBWX4SSza8UHPooaLCuwfwAQJBAMOr7/o8DJv2OiYdoqLNJZVKLtVGYQqGwyhjcFbKU6pk/EBw5JBP79TrcsEJ+igL8qlMHyWC9RtpSNpVXKDNmoECQQC/YdeAiLb2olljaCrJuAHF/rdGw0BL6t1O/gl4jBPiOd0ADu/unBerbpg630yweAgZC72fsuaH83Bn99MB9qhhAkEAiR3ig8MyvtPz+aPIxTbnAE/Es9WmyP6YoaPVJCySJpSvo+S4dlxd3yHC/30jXI7K1FIwfVPguP21fLJWv6R0gQJBAKqR32n1b2w9ogGRE6GZWCtJK7vrxWBkQT5n97Ty073q6Gdm6Lz3bbki5paB8m3NbRo1dpng7sn4VBS1seCsH8ECQAJe49UUHUGtFdFuxpyAn3V8+TogOg5CM10/rJTj4aeOnXpysbyaX/PIrtZSHgho7BvAPfpbWZhYqZKSJPmn6UI=";
     private EditText edit_src;
     private EditText edit_rlt;
 
@@ -61,9 +61,10 @@ public class SignFragment extends Fragment implements View.OnClickListener {
         KeyFactory keyFactory = null;
         try {
             keyFactory = KeyFactory.getInstance("RSA");
-            //
-            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(Base64.decode(publicKesStr, Base64.NO_WRAP)));
-            PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(privateKesStr, Base64.NO_WRAP)));
+            //获得公钥
+            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(Base64.decode(PUBLIC_KES_STR, Base64.NO_WRAP)));
+            //获得私钥
+            PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(PRIVATE_KES_STR, Base64.NO_WRAP)));
             //摘要算法With加密算法  SHA1 SHA256
             Signature signature = Signature.getInstance("MD5WithRSA");
             String src = edit_src.getText().toString();
