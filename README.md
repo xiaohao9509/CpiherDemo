@@ -24,3 +24,132 @@ RSA算法是非对称加密算法的典型代表，既能加密、又能解密�
 客户端接收到服务器发送的数据会使用公钥（publickey）对数据来进行解密,
 并且根据加密数据和公钥验证数字签名的有效性，防止加密数据在传输过程中被第三方进行了修改。
 客户端发送数据给服务器时使用公钥进行加密，服务器接收到加密数据之后使用私钥进行解密。
+###2.算法的使用
+####1.MD5摘要算法
+MD5是一种摘要算法,如同他的名字一样,它会将byte数组经过运算后得到一段摘要byte数组,但是并不能通过这个byte数组解密,
+它通常用来验证数据的完整性,代码如下:
+```javascript
+ String src = edit.getText().toString();
+        if (!TextUtils.isEmpty(src)) {
+            try {
+                //获得md5摘要算法的实例
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                //运算得到摘要byte数组
+                byte[] digest = md5.digest(src.getBytes("UTF-8"));
+                StringBuilder builder = new StringBuilder();
+                for (byte b : digest) {
+                    //将每一个byte转换成两位十六进制
+                    builder.append(String.format("%02x", b));
+                }
+                text.setText(builder.toString());
+
+            } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+```
+####2.Base64算法
+Base64严格来说不是一个加密算法,它的加密解密算法在网络上是公开的,它通常在当数据在网络上传播时加密一下,
+让肉眼无法一下分辨
+代码如下:
+```javascript
+case R.id.base64_encode:
+                String src = mEdit.getText().toString();
+                if (!TextUtils.isEmpty(src)) {
+                    try {
+                        byte[] bytes = src.getBytes("UTF-8");
+                        //NO_WRAP 不包含/n的形式  URL 只能编码字符串
+                        String rlt = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                        mTextView.setText(rlt);
+////                        直接转bit数组 以%分割
+//                        String rlt = URLEncoder.encode(src, "UTF-8");
+//                        mTextView.setText(rlt);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case R.id.base64_decode:
+                String rlt = mTextView.getText().toString();
+                if (!TextUtils.isEmpty(rlt)) {
+                    try {
+                        byte[] decode = Base64.decode(rlt, Base64.NO_WRAP);
+                        mEdit.setText(new String(decode, "UTF-8"));
+//                        String decode = URLDecoder.decode(rlt, "utf-8");
+//                        mTextView.setText(decode);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+```
+####3.DES对称加密/解密
+DES是一个种对称加密,解密的算法,对称的意思是,它解密加密的密钥是一个长度大于8位的字符串,不过原版DES容易被暴力破解,
+后来出了3DES,现在比较安全的对称加密算法是AES,通常大量数据传输时用DES,3DES或者AES对数据进行加密.
+代码如下:
+
+```javascript
+
+//    private static final byte[] key = {1, 2, 3, 4, 5, 6, 7, 8};
+    private static final byte[] key = {
+            1, 2, 3, 4, 5, 6, 7, 8,
+            1, 2, 3, 4, 5, 6, 7, 8,
+            1, 2, 3, 4, 5, 6, 7, 8
+    };
+    private static final String TAG = DesFragment.class.getSimpleName();
+    /**
+     * 算法名,
+     * Des 密钥为8位
+     * 3Des(DESede)  密钥为24位
+     * AES 密钥为32位
+     */
+     //DES
+//    public static final String algorithm = "Des";
+    //3DES
+    private static final String algorithm = "DESede";
+
+
+try {
+            //非对称工厂
+//            KeyFactory factory = KeyFactory.getInstance("Des");
+            //对称工厂
+            SecretKeyFactory des = SecretKeyFactory.getInstance(algorithm);
+            //只能放8位bit数组
+            //获得Des
+//            SecretKey secretKey = des.generateSecret(new DESKeySpec(key));
+            //获得DESede
+//            SecretKey secretKey = des.generateSecret(new DESedeKeySpec(key));
+            //通过所给的名字获得对应加密算法
+            SecretKey secretKey = des.generateSecret(new SecretKeySpec(key, algorithm));
+            //两个算法名字必须一样
+            Cipher cipher = Cipher.getInstance(algorithm);
+
+            switch (v.getId()) {
+                case R.id.des_encrypt:
+                    String src = mEditSrc.getText().toString();
+                    if (!TextUtils.isEmpty(src)) {
+                        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                        byte[] bytes = cipher.doFinal(src.getBytes("UTF-8"));
+                        //用base64变成字符串
+                        Log.d(TAG, "onClick: " + bytes.length);
+                        mEditRlt.setText(Base64.encodeToString(bytes, Base64.NO_WRAP));
+//                        mEditRlt.setText(new String(bytes,"utf-8"));
+                    }
+                    break;
+                case R.id.des_decrypt:
+                    String rlt = mEditRlt.getText().toString();
+                    if (!TextUtils.isEmpty(rlt)) {
+                        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+                        byte[] bytes = cipher.doFinal(Base64.decode(rlt, Base64.NO_WRAP));
+//                        byte[] bytes = cipher.doFinal(rlt.getBytes("utf-8"));
+                        mEditRlt.setText(new String(bytes, "utf-8"));
+                    }
+                    break;
+            }
+
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException | NoSuchPaddingException | BadPaddingException | UnsupportedEncodingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+```
+
