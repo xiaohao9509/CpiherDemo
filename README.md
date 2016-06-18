@@ -89,7 +89,6 @@ DES是一个种对称加密,解密的算法,对称的意思是,它解密加密�
 代码如下:
 
 ```javascript
-
 //    private static final byte[] key = {1, 2, 3, 4, 5, 6, 7, 8};
     private static final byte[] key = {
             1, 2, 3, 4, 5, 6, 7, 8,
@@ -107,8 +106,6 @@ DES是一个种对称加密,解密的算法,对称的意思是,它解密加密�
 //    public static final String algorithm = "Des";
     //3DES
     private static final String algorithm = "DESede";
-
-
 try {
             //非对称工厂
 //            KeyFactory factory = KeyFactory.getInstance("Des");
@@ -146,10 +143,117 @@ try {
                     }
                     break;
             }
-
-
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException | NoSuchPaddingException | BadPaddingException | UnsupportedEncodingException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
 ```
+####4.RSA非对称加密/解密
+RSA非对称算法,是一个相当而言比较安全的算法,非对称的意思是此算法有一个公钥与一个私钥,可以用公钥加密,私钥解密,
+或者私钥加密,公钥加密,举个通俗的例子:
+***
+小明想秘密给小英发送消息
 
+小英手里有一个盒子（public key），这个盒子只有小英手里的钥匙（private key）才打得开
+
+小英把盒子送给小明（分发公钥）
+
+小明写好消息放进盒子里，锁上盒子（公钥加密）
+
+小明把盒子寄给小英（密文传输）
+
+小英用手里的钥匙打开盒子，得到小明的消息（私钥解密）
+
+假设小刚劫持了盒子，因为没有小英的钥匙，他也打不开
+***
+所以我们首先需要获得对应的公钥和私钥,代码如下
+```javascript
+try {
+            //得到RSA算法
+            KeyPairGenerator rsa = KeyPairGenerator.getInstance("RSA");
+            //初始化为1024位的RSA算法
+            rsa.initialize(1024);
+            //得到公钥私钥键值对
+            KeyPair keyPair = rsa.generateKeyPair();
+            //得到公钥与私钥
+            RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+            RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+
+            //将公钥私钥输出Encoded
+            byte[] publicKeyEncoded = publicKey.getEncoded();
+            byte[] privateKeyEncoded = privateKey.getEncoded();
+
+            
+            System.out.println("公钥: "+ Base64.encodeToString(publicKeyEncoded,Base64.NO_WRAP));
+            System.out.println("密钥: "+ Base64.encodeToString(privateKeyEncoded,Base64.NO_WRAP));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+```
+得到公钥私钥后对数据进行加解密,代码如下:
+```javascript
+try {
+            //初始化key工厂为RSA
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            //用X509协议获得到公钥
+            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(Base64.decode(publicKesStr, Base64.NO_WRAP)));
+            //用PKCS协议获得到私钥
+            PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(privateKesStr, Base64.NO_WRAP)));
+            //得到RSA算法
+            Cipher cipher = Cipher.getInstance("RSA");
+            switch (v.getId()) {
+                case R.id.rsa_encrypt:
+                    String src = mSrc.getText().toString();
+                    if (!TextUtils.isEmpty(src)) {
+                        //初始化为加密模式,用私钥加密
+                        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+                        //得到加密后的byte数组
+                        byte[] bytes = cipher.doFinal(src.getBytes("UTF-8"));
+                        //将密文输出成Base64的字符串
+                        mRlt.setText(Base64.encodeToString(bytes, Base64.NO_WRAP));
+                    }
+                    break;
+                case R.id.rsa_decrypt:
+                    String rlt = mRlt.getText().toString();
+                    if (!TextUtils.isEmpty(rlt)) {
+                        //初始化为解密模式,用公钥解密
+                        cipher.init(Cipher.DECRYPT_MODE, publicKey);
+                        //将转换成Base64的字符串还原成最开始的密文
+                        byte[] bytes = cipher.doFinal(Base64.decode(rlt, Base64.NO_WRAP));
+                        //得到解密后的铭明文
+                        mRlt.setText(new String(bytes, "utf-8"));
+                    }
+                    break;
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | UnsupportedEncodingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+```
+##总结
+数据加密：
+
+为了保证数据的安全性，不会泄露数据的真是内容
+
+数据摘要：
+
+为了确保数据中途没有被篡改过，数据的内容时完整的正确的
+
+数据签名：
+
+为了保证数据是对方过来的，而不是从别的地方来的
+
+
+在真实的互联网应用中，加密场景非常重要
+
+1、对数据加密
+
+2、对密文生成摘要
+
+3、对摘要进行签名
+
+4、将密文和签名一起发送
+
+这样就保证了数据的安全性
+
+这里还有一个唯一的漏洞就是接收方的公钥被人替换了，所以就出现了证书认证中心
+
+确保公钥的安全性，在发送数据的时候加上数字证书。
