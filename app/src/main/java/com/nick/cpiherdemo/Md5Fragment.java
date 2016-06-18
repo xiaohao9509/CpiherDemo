@@ -58,6 +58,7 @@ public class Md5Fragment extends Fragment implements View.OnClickListener {
                 byte[] digest = md5.digest(src.getBytes("UTF-8"));
                 StringBuilder builder = new StringBuilder();
                 for (byte b : digest) {
+                    //将每一个byte转换成两位十六进制
                     builder.append(String.format("%02x", b));
                 }
                 text.setText(builder.toString());

@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mFragments = new Fragment[5];
 
-        mFragments[0] = new DesFragment();
+        mFragments[0] = new Md5Fragment();
         mFragments[1] = new Base64Fragment();
         mFragments[2] = new DesFragment();
         mFragments[3] = new RsaFragment();
