@@ -228,6 +228,50 @@ try {
             e.printStackTrace();
         }
 ```
+####5.签名
+签名的运用,是用来验证数据是否由真正的人(没有被其他人纂改)发送过来,签名是先对数据加密,一般用DES,3DES或者AES(安全性高,速度快)加密,得到密文,再对密文用SHA1或者MD5摘要算法,得到摘要,再对摘要用RSA算法加密得到签名,通常数据发送者用私钥加密,数据接收者用公钥解.
+将密文与签名一起发送给接收者,接收者接收到密文后对密文进行对应的摘要算法得到摘要,再对签名用私钥解密,得到后与摘要进行比较,
+相同则表明数据没有被纂改.
+
+代码如下:
+```javascript
+try {
+            keyFactory = KeyFactory.getInstance("RSA");
+            //获得公钥
+            PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(Base64.decode(PUBLIC_KES_STR, Base64.NO_WRAP)));
+            //获得私钥
+            PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(PRIVATE_KES_STR, Base64.NO_WRAP)));
+            //摘要算法With加密算法  SHA1 SHA256
+            Signature signature = Signature.getInstance("MD5WithRSA");
+            String src = edit_src.getText().toString();
+            if (!TextUtils.isEmpty(src)) {
+
+                switch (v.getId()) {
+                    case R.id.sign_sign:
+                        signature.initSign(privateKey);
+                        signature.update(src.getBytes("UTF-8"));
+                        byte[] bytes = signature.sign();
+                        edit_rlt.setText(Base64.encodeToString(bytes, Base64.NO_WRAP));
+                        break;
+                    case R.id.sign_verify:
+                        String rlt = edit_rlt.getText().toString();
+                        if (!TextUtils.isEmpty(rlt)) {
+                            signature.initVerify(publicKey);
+                            signature.update(src.getBytes("UTF-8"));
+                            boolean verify = signature.verify(Base64.decode(rlt, Base64.NO_WRAP));
+                            if (verify) {
+                                Toast.makeText(getActivity(), "数据正确", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getActivity(), "数据错误", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        break;
+                }
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidKeyException | SignatureException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+```
 ##总结
 数据加密：
 
