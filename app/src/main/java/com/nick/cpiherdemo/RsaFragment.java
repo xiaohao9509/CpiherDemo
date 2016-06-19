@@ -63,24 +63,34 @@ public class RsaFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         try {
+            //初始化key工厂为RSA
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            //用X509协议获得到公钥
             PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(Base64.decode(publicKesStr, Base64.NO_WRAP)));
+            //用PKCS协议获得到私钥
             PrivateKey privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(privateKesStr, Base64.NO_WRAP)));
+            //得到RSA算法
             Cipher cipher = Cipher.getInstance("RSA");
             switch (v.getId()) {
                 case R.id.rsa_encrypt:
                     String src = mSrc.getText().toString();
                     if (!TextUtils.isEmpty(src)) {
+                        //初始化为加密模式,用私钥加密
                         cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+                        //得到加密后的byte数组
                         byte[] bytes = cipher.doFinal(src.getBytes("UTF-8"));
+                        //将密文输出成Base64的字符串
                         mRlt.setText(Base64.encodeToString(bytes, Base64.NO_WRAP));
                     }
                     break;
                 case R.id.rsa_decrypt:
                     String rlt = mRlt.getText().toString();
                     if (!TextUtils.isEmpty(rlt)) {
+                        //初始化为解密模式,用公钥解密
                         cipher.init(Cipher.DECRYPT_MODE, publicKey);
+                        //将转换成Base64的字符串还原成最开始的密文
                         byte[] bytes = cipher.doFinal(Base64.decode(rlt, Base64.NO_WRAP));
+                        //得到解密后的铭明文
                         mRlt.setText(new String(bytes, "utf-8"));
                     }
                     break;

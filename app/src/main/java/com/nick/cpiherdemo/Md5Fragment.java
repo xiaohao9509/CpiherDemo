@@ -55,6 +55,7 @@ public class Md5Fragment extends Fragment implements View.OnClickListener {
             try {
                 //获得md5摘要算法的实例
                 MessageDigest md5 = MessageDigest.getInstance("MD5");
+                //运算得到摘要byte数组
                 byte[] digest = md5.digest(src.getBytes("UTF-8"));
                 StringBuilder builder = new StringBuilder();
                 for (byte b : digest) {
